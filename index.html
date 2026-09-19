@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horta Inteligente</title>
+    <style>
+      :root {
+        --bg: #dbe5e8;
+        --panel: #f4f7f5;
+        --card: #ffffff;
+        --card-alt: #e9f2ee;
+        --white: #ffffff;
+        --blue: #2d7ef7;
+        --blue-dark: #1d5ed8;
+        --green: #3ccf7c;
+        --green-soft: #d9f6e8;
+        --green-deep: #0f8e4d;
+        --text: #0f1d2f;
+        --muted: #5f7086;
+        --stroke: #d4ebf8;
+        --shadow: 0 20px 42px rgba(36, 57, 67, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Trebuchet MS", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background: linear-gradient(135deg, #dce8eb 0%, #eaf2ed 52%, #d7e7e1 100%);
+      }
+
+      .app-shell {
+        position: relative;
+        width: min(430px, calc(100vw - 20px));
+        height: min(910px, calc(100dvh - 20px));
+        min-height: 720px;
+        background: linear-gradient(160deg, #f8fbfa 0%, #eef6f1 54%, #e2efe9 100%);
+        border-radius: 36px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        border: 10px solid rgba(255,255,255,0.75);
+      }
+
+      .app-shell::before,
+      .app-shell::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(120, 200, 150, 0.12);
+        filter: blur(12px);
+      }
+
+      .app-shell::before {
+        left: -30px;
+        bottom: 0;
+      }
+
+      .app-shell::after {
+        right: -20px;
+        top: 100px;
+      }
+
+      .phone-inner {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        padding: 18px 18px 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 8px;
+        margin-bottom: 12px;
+      }
+
+      .header-icons {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
+      }
+
+      .bell {
+        width: 24px;
+        height: 24px;
+        position: relative;
+        font-size: 0;
+      }
+
+      .bell::before {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 4px;
+        width: 12px;
+        height: 13px;
+        border: 2px solid var(--text);
+        border-radius: 8px 8px 4px 4px;
+      }
+
+      .bell::after {
+        content: "";
+        position: absolute;
+        left: 9px;
+        bottom: 3px;
+        width: 7px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--text);
+      }
+
+      .avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: block;
+        object-fit: cover;
+        background: #ffffff;
+        position: relative;
+        border: 3px solid #fff;
+        box-shadow: 0 10px 20px rgba(51, 104, 172, 0.1);
+      }
+
+      h1 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 2.2rem;
+        line-height: 1.05;
+        letter-spacing: 0;
+        font-weight: 800;
+        margin: 8px 0 16px;
+      }
+
+      h1 .leaf {
+        display: none;
+      }
+
+      .mini-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #ffffff 0%, #f1f8f4 100%) !important;
+        border: 1px solid var(--stroke);
+        border-left: 4px solid var(--blue);
+        border-radius: 12px;
+        padding: 12px 14px;
+        height: 96px;
+        margin-top: 8px;
+      }
+
+      .mini-card:nth-child(2) { border-left-color: var(--green-deep); }
+      .mini-card:nth-child(3) { border-left-color: #c8796d; }
+      .mini-card:nth-child(4) { border-left-color: #3c91b6; }
+
+      .mini-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: #edf4f1;
+        font-size: 0;
+        flex: 0 0 36px;
+      }
+
+      .mini-info {
+        flex: 1;
+        margin-left: 12px;
+      }
+
+      .mini-info p {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-bottom: 2px;
+      }
+
+      .mini-info strong {
+        font-size: 1rem;
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 96px;
+        gap: 12px;
+        margin-top: 10px;
+        flex-shrink: 0;
+      }
+
+      .mini-card.large {
+        height: 96px;
+      }
+
+      .mini-card.large .mini-info strong {
+        font-size: 1.45rem;
+        line-height: 1.05;
+      }
+
+      .mini-card.large .mini-info p {
+        font-size: 0.9rem;
+      }
+
+      .mini-card.large .mini-icon {
+        background: #edf4f1;
+        width: 36px;
+        height: 36px;
+      }
+
+      .mini-card .mini-icon::before {
+        content: "";
+        display: block;
+      }
+
+      .mini-card:nth-child(1) .mini-icon::before {
+        width: 13px;
+        height: 17px;
+        border: 2px solid var(--blue);
+        border-radius: 70% 70% 70% 0;
+        transform: rotate(-45deg) translate(1px, -1px);
+      }
+
+      .mini-card:nth-child(2) .mini-icon::before {
+        width: 17px;
+        height: 11px;
+        border-radius: 100% 0 100% 0;
+        background: var(--green-deep);
+        transform: rotate(-35deg);
+      }
+
+      .mini-card:nth-child(3) .mini-icon::before {
+        width: 8px;
+        height: 20px;
+        border: 2px solid #c8796d;
+        border-radius: 8px;
+        box-shadow: inset 0 -7px 0 #c8796d;
+      }
+
+      .mini-card:nth-child(4) .mini-icon::before {
+        width: 18px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #3c91b6;
+        transform: rotate(-25deg);
+      }
+
+      .garden-wrap {
+        position: relative;
+        margin-top: 16px;
+        width: 100%;
+        height: 260px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .ring {
+        position: absolute;
+        top: 58px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(200px, 54vw);
+        height: min(200px, 54vw);
+        border-radius: 20px;
+        background: #dcebe5;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 22px rgba(53, 112, 104, 0.16);
+      }
+
+      .ring::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 9px;
+        border-radius: 20px;
+        background: conic-gradient(from -90deg, #2e80ee 0deg 252deg, #c5dcd3 252deg 360deg);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: moisturePulse 2.8s ease-in-out infinite;
+      }
+
+      .ring-inner {
+        position: relative;
+        z-index: 1;
+        width: calc(100% - 20px);
+        height: calc(100% - 20px);
+        border-radius: 12px;
+        background: linear-gradient(145deg, #edf8f5 0%, #d8edf0 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 0 0 3px rgba(164, 216, 255, 0.5);
+      }
+
+      .garden-photo {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+
+      .ring-label {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        width: 125px;
+        text-align: left;
+        color: var(--text);
+      }
+
+      .ring-label .mini {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .ring-label strong {
+        display: block;
+        font-size: 2.1rem;
+        letter-spacing: -0.06em;
+        line-height: 0.9;
+        margin-top: 8px;
+      }
+
+      .water-badge {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        top: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 132px;
+        height: 52px;
+        background: var(--card);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 8px 10px;
+        box-shadow: none;
+      }
+
+      .water-badge .drop {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #edf4f1;
+        display: grid;
+        place-items: center;
+        font-size: 0;
+      }
+
+      .water-badge .drop::before {
+        content: "";
+        width: 10px;
+        height: 14px;
+        border: 2px solid var(--blue);
+        border-radius: 70% 70% 70% 0;
+        transform: rotate(-45deg);
+      }
+
+      .water-badge span {
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .water-badge strong {
+        display: block;
+        font-size: 1.7rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
+
+      .stat-box {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f7f3 100%);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        height: 92px;
+        min-height: 0;
+        padding: 7px 6px;
+        text-align: center;
+      }
+
+      .stat-box .leaf {
+        font-size: 0;
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-bottom: 4px;
+        border-radius: 8px;
+        background: #edf4f1;
+        position: relative;
+      }
+
+      .stat-box .leaf::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 6px;
+        width: 11px;
+        height: 7px;
+        border-radius: 100% 0 100% 0;
+        background: var(--green-deep);
+        transform: rotate(-35deg);
+      }
+
+      .stat-box:nth-child(2) .leaf::before {
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--green-deep);
+        border-radius: 3px;
+        background: transparent;
+        transform: rotate(45deg);
+      }
+
+      .stat-box:nth-child(3) .leaf::before {
+        width: 11px;
+        height: 15px;
+        border: 2px solid var(--blue);
+        border-radius: 70% 70% 70% 0;
+        background: transparent;
+        transform: rotate(-45deg);
+      }
+
+      .stat-box:nth-child(4) .leaf::before {
+        width: 14px;
+        height: 10px;
+        border-top: 2px solid var(--green-deep);
+        border-right: 2px solid var(--green-deep);
+        background: transparent;
+        transform: rotate(-35deg);
+      }
+
+      .stat-box strong {
+        display: block;
+        font-size: 1.1rem;
+        line-height: 1.1;
+      }
+
+      .stat-box span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+        line-height: 1.2;
+        margin-top: 4px;
+      }
+
+      .bottom-nav {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 0;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid rgba(123, 145, 171, 0.25);
+        flex-shrink: 0;
+      }
+
+      .nav-item {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 0.62rem;
+      }
+
+      .nav-item .icon {
+        font-size: 0;
+        width: 20px;
+        height: 18px;
+        position: relative;
+        margin-bottom: 2px;
+      }
+
+      .nav-item .icon::before {
+        color: currentColor;
+        font-size: 1rem;
+        font-weight: 400;
+      }
+
+      .nav-item:nth-child(1) .icon::before { content: "⌂"; }
+      .nav-item:nth-child(2) .icon::before { content: "▣"; }
+      .nav-item:nth-child(3) .icon::before { content: "✓"; }
+      .nav-item:nth-child(4) .icon::before { content: "★"; }
+      .nav-item:nth-child(5) .icon::before { content: "○"; }
+
+      .nav-item.active {
+        color: var(--blue-dark);
+      }
+
+      .sensor-view {
+        display: none;
+        flex: 1;
+        padding-top: 8px;
+        overflow: hidden;
+      }
+
+      .sensor-view.active {
+        display: block;
+      }
+
+      .sensor-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        margin: 6px 0 16px;
+      }
+
+      .sensor-heading h2 {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .sensor-heading p {
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .sensor-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .sensor-card {
+        min-height: 128px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf7f1 100%);
+      }
+
+      .sensor-card.wide {
+        grid-column: 1 / -1;
+        min-height: 104px;
+      }
+
+      .sensor-card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .sensor-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green-deep);
+      }
+
+      .sensor-card strong {
+        display: block;
+        margin-top: 18px;
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+
+      .sensor-card small {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+      }
+
+      .sensor-bar {
+        height: 8px;
+        margin-top: 16px;
+        border-radius: 8px;
+        background: #dcebe3;
+        overflow: hidden;
+      }
+
+      .sensor-bar span {
+        display: block;
+        width: 72%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #3c9a70, #72c59b);
+      }
+
+      .report-view {
+        display: none;
+        flex: 1;
+        padding-top: 8px;
+        overflow: hidden;
+      }
+
+      .report-view.active {
+        display: block;
+      }
+
+      .report-heading {
+        margin: 6px 0 16px;
+      }
+
+      .report-heading h2 {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .report-heading p {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .report-card {
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 14px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf7f1 100%);
+        margin-bottom: 10px;
+      }
+
+      .report-card header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .report-card header strong {
+        color: var(--text);
+        font-size: 1.2rem;
+      }
+
+      .consumption-chart {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        height: 130px;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 10px;
+        border-bottom: 1px solid var(--stroke);
+      }
+
+      .chart-column {
+        display: flex;
+        flex: 1;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 0.65rem;
+      }
+
+      .chart-column i {
+        display: block;
+        width: 16px;
+        height: var(--bar-height);
+        min-height: 12px;
+        border-radius: 8px 8px 2px 2px;
+        background: linear-gradient(180deg, #4d9d79, #a6d8ba);
+      }
+
+      .report-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .summary-line {
+        min-height: 90px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 12px;
+        background: rgba(255,255,255,0.72);
+      }
+
+      .summary-line span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+
+      .summary-line strong {
+        display: block;
+        margin-top: 12px;
+        font-size: 1.45rem;
+      }
+
+      .report-note {
+        margin-top: 10px;
+        color: var(--green-deep);
+        font-size: 0.78rem;
+      }
+
+      .report-profile-switcher {
+        display: flex;
+        gap: 6px;
+        margin: 8px 0 10px;
+      }
+
+      .report-profile-switcher button {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--stroke);
+        border-radius: 9px;
+        padding: 7px 3px;
+        background: #f5faf7;
+        color: var(--muted);
+        font-size: 0.62rem;
+        cursor: pointer;
+      }
+
+      .report-profile-switcher button.active {
+        border-color: #8dc7a5;
+        background: #e5f3ea;
+        color: var(--green-deep);
+        font-weight: 700;
+      }
+
+      .daily-report {
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        padding: 12px;
+        background: rgba(255,255,255,0.8);
+      }
+
+      .daily-report header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .daily-report header strong {
+        font-size: 0.86rem;
+      }
+
+      .daily-report header span {
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .daily-report textarea {
+        width: 100%;
+        height: 54px;
+        resize: none;
+        margin-top: 8px;
+        padding: 8px;
+        border: 1px solid #c5ded0;
+        border-radius: 9px;
+        background: #fbfefc;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.72rem;
+        outline: none;
+      }
+
+      .daily-report textarea:focus {
+        border-color: var(--green-deep);
+        box-shadow: 0 0 0 3px rgba(15, 142, 77, 0.1);
+      }
+
+      .daily-report-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 7px;
+      }
+
+      .daily-report-footer small {
+        color: var(--muted);
+        font-size: 0.62rem;
+      }
+
+      .save-report {
+        border: 0;
+        border-radius: 8px;
+        padding: 7px 10px;
+        background: var(--green-deep);
+        color: #fff;
+        font: inherit;
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .about-view {
+        display: none;
+        flex: 1;
+        padding-top: 8px;
+        overflow: hidden;
+      }
+
+      .about-view.active {
+        display: block;
+      }
+
+      .about-heading {
+        margin: 6px 0 14px;
+      }
+
+      .about-heading h2 {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .about-heading p {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .about-card {
+        margin-bottom: 10px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf7f1 100%);
+      }
+
+      .about-card h3 {
+        font-size: 1rem;
+        margin-bottom: 7px;
+      }
+
+      .about-card p {
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+
+      .member-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .member {
+        padding: 10px;
+        border-radius: 10px;
+        background: #f5faf7;
+        border: 1px solid #e0eee6;
+      }
+
+      .member strong {
+        display: block;
+        font-size: 0.82rem;
+      }
+
+      .member span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .missions-view {
+        display: none;
+        flex: 1;
+        padding-top: 8px;
+        overflow: hidden;
+      }
+
+      .missions-view.active {
+        display: block;
+      }
+
+      .missions-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        margin: 6px 0 12px;
+      }
+
+      .missions-heading h2 {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .missions-heading p {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .mission-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf7f1 100%);
+      }
+
+      .mission-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #d5e9df;
+      }
+
+      .mission-profile strong {
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .mission-profile span {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 0.7rem;
+      }
+
+      .mission-xp {
+        margin-left: auto;
+        text-align: right;
+        color: var(--green-deep);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .mission-progress {
+        height: 7px;
+        margin: 10px 0 14px;
+        border-radius: 7px;
+        background: #dcebe3;
+        overflow: hidden;
+      }
+
+      .mission-progress span {
+        display: block;
+        width: 64%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #3c9a70, #87cda5);
+      }
+
+      .mission-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .mission-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 60px;
+        padding: 9px 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: #ffffff;
+      }
+
+      .mission-check {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        border: 2px solid #9fcdb1;
+        border-radius: 9px;
+        color: #fff;
+        font-size: 0.9rem;
+      }
+
+      .mission-card.done .mission-check {
+        background: var(--green-deep);
+        border-color: var(--green-deep);
+      }
+
+      .mission-card strong {
+        display: block;
+        font-size: 0.78rem;
+      }
+
+      .mission-card small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .mission-reward {
+        margin-left: auto;
+        color: var(--green-deep);
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+
+      .profile-switcher {
+        display: flex;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .profile-switcher button {
+        flex: 1;
+        border: 1px solid var(--stroke);
+        border-radius: 9px;
+        padding: 7px 4px;
+        background: #f5faf7;
+        color: var(--muted);
+        font-size: 0.64rem;
+        cursor: pointer;
+      }
+
+      .profile-switcher button.active {
+        border-color: #8dc7a5;
+        background: #e5f3ea;
+        color: var(--green-deep);
+        font-weight: 700;
+      }
+
+      .profile-overview {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .overview-card {
+        width: 100%;
+        border: 0;
+        padding: 10px;
+        border: 1px solid var(--stroke);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.8);
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .overview-card strong {
+        display: block;
+        font-size: 0.78rem;
+      }
+
+      .overview-card span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.66rem;
+      }
+
+      .overview-card small {
+        display: block;
+        margin-top: 8px;
+        color: var(--green-deep);
+        font-size: 0.68rem;
+        font-weight: 700;
+      }
+
+      .report-overview-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .report-overview-summary div {
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--stroke);
+      }
+
+      .report-overview-summary span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .report-overview-summary strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.25rem;
+      }
+
+      .report-overview-summary p {
+        grid-column: 1 / -1;
+        margin: 2px 2px 0;
+        color: var(--green-deep);
+        font-size: 0.72rem;
+      }
+
+      .report-overview-panel {
+        margin-top: 12px;
+        padding: 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf7f1 100%);
+      }
+
+      .report-overview-panel header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .report-overview-panel header strong {
+        font-size: 0.86rem;
+      }
+
+      .report-overview-panel header span {
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .overview-chart {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        height: 122px;
+        gap: 8px;
+        margin-top: 14px;
+        padding: 0 4px;
+        border-bottom: 1px solid var(--stroke);
+      }
+
+      .overview-bar {
+        display: flex;
+        height: 100%;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 0.62rem;
+      }
+
+      .overview-bar i {
+        display: block;
+        width: 18px;
+        height: var(--bar-height);
+        min-height: 12px;
+        border-radius: 8px 8px 2px 2px;
+        background: linear-gradient(180deg, #2e80ee, #77bea0);
+      }
+
+      .report-insights {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-top: 12px;
+      }
+
+      .report-insights div {
+        padding: 8px;
+        border-radius: 9px;
+        background: rgba(255,255,255,0.72);
+      }
+
+      .report-insights span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.6rem;
+      }
+
+      .report-insights strong {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.82rem;
+      }
+
+      .profile-detail {
+        display: none;
+      }
+
+      .profile-detail.active {
+        display: block;
+      }
+
+      .mission-calendar {
+        margin-top: 12px;
+        padding: 14px 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.78);
+      }
+
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .calendar-header strong {
+        font-size: 0.82rem;
+      }
+
+      .calendar-header button {
+        width: 24px;
+        height: 24px;
+        border: 0;
+        border-radius: 7px;
+        background: #e7f2ec;
+        color: var(--green-deep);
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .calendar-weekdays,
+      .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 8px;
+        text-align: center;
+      }
+
+      .calendar-weekdays span {
+        color: var(--muted);
+        font-size: 0.58rem;
+        font-weight: 700;
+      }
+
+      .calendar-days button {
+        height: 32px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.68rem;
+        cursor: pointer;
+      }
+
+      .calendar-days button.today {
+        border-color: #75b991;
+        color: var(--green-deep);
+        font-weight: 800;
+      }
+
+      .calendar-days button.selected {
+        background: var(--green-deep);
+        color: #fff;
+      }
+
+      .calendar-days button:disabled {
+        color: #b7c7be;
+        cursor: default;
+      }
+
+      .calendar-note {
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 0.64rem;
+        text-align: center;
+      }
+
+      .auth-modal {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(15, 29, 47, 0.42);
+      }
+
+      .auth-modal.open {
+        display: flex;
+      }
+
+      .auth-card {
+        width: min(100%, 300px);
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.7);
+        border-radius: 16px;
+        background: #f8fcfa;
+        box-shadow: 0 20px 40px rgba(15, 29, 47, 0.2);
+      }
+
+      .auth-card h3 {
+        font-size: 1.2rem;
+      }
+
+      .auth-card p {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .auth-card label {
+        display: block;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .auth-card input {
+        width: 100%;
+        height: 42px;
+        margin-top: 6px;
+        padding: 0 12px;
+        border: 1px solid #b9d7c5;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--text);
+        font: inherit;
+        outline: none;
+      }
+
+      .auth-card input:focus {
+        border-color: var(--green-deep);
+        box-shadow: 0 0 0 3px rgba(15, 142, 77, 0.12);
+      }
+
+      .auth-error {
+        min-height: 18px;
+        margin-top: 6px;
+        color: #b33b3b;
+        font-size: 0.7rem;
+      }
+
+      .auth-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .auth-actions button {
+        flex: 1;
+        height: 38px;
+        border: 0;
+        border-radius: 9px;
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .auth-cancel {
+        background: #e8f0ec;
+        color: var(--muted);
+      }
+
+      .auth-submit {
+        background: var(--green-deep);
+        color: #fff;
+      }
+
+      @keyframes moisturePulse {
+        0%, 100% { opacity: 0.82; }
+        50% { opacity: 1; }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 0;
+          background: linear-gradient(135deg, #dce8eb 0%, #eaf2ed 52%, #d7e7e1 100%);
+        }
+
+        .app-shell {
+          width: 100vw;
+          height: 100dvh;
+          min-height: 0;
+          border-radius: 0;
+          border: none;
+        }
+
+        .garden-wrap {
+          height: 260px;
+        }
+
+        .ring {
+          width: min(200px, 54vw);
+          height: min(200px, 54vw);
+        }
+
+        .ring-inner {
+          width: 150px;
+          height: 150px;
+        }
+
+        .stats-grid {
+          gap: 8px;
+        }
+      }
+
+      @media (max-width: 480px) and (max-height: 760px) {
+        .phone-inner {
+          padding: 10px 14px 0;
+        }
+
+        .topbar {
+          margin-top: 2px;
+          margin-bottom: 6px;
+        }
+
+        .avatar {
+          width: 42px;
+          height: 42px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+          margin: 4px 0 10px;
+        }
+
+        .mini-grid {
+          gap: 8px;
+          margin-top: 6px;
+          grid-auto-rows: 72px;
+        }
+
+        .mini-card,
+        .mini-card.large {
+          height: 72px;
+          padding: 8px 10px;
+          margin-top: 6px;
+        }
+
+        .mini-icon,
+        .mini-card.large .mini-icon {
+          width: 30px;
+          height: 30px;
+          flex-basis: 30px;
+        }
+
+        .mini-info {
+          margin-left: 8px;
+        }
+
+        .mini-info p,
+        .mini-card.large .mini-info p {
+          font-size: 0.62rem;
+        }
+
+        .mini-info strong {
+          font-size: 0.86rem;
+        }
+
+        .mini-card.large .mini-info strong {
+          font-size: 1.05rem;
+        }
+
+        .garden-wrap {
+          height: 310px;
+          margin-top: 8px;
+        }
+
+        .ring {
+          top: 50px;
+          width: 240px;
+          height: 240px;
+        }
+
+        .ring-inner {
+          width: 220px;
+          height: 220px;
+        }
+
+        .ring-label strong {
+          font-size: 1.8rem;
+          margin-top: 4px;
+        }
+
+        .ring-label .mini {
+          font-size: 0.72rem;
+        }
+
+        .water-badge {
+          width: 116px;
+          height: 42px;
+          padding: 5px 7px;
+        }
+
+        .water-badge .drop {
+          width: 24px;
+          height: 24px;
+        }
+
+        .water-badge span {
+          font-size: 0.68rem;
+        }
+
+        .water-badge strong {
+          font-size: 1.2rem;
+        }
+
+        .stats-grid {
+          gap: 6px;
+          margin-top: 6px;
+        }
+
+        .stat-box {
+          height: 78px;
+          padding: 5px 3px;
+        }
+
+        .stat-box .leaf {
+          width: 22px;
+          height: 22px;
+          margin-bottom: 2px;
+        }
+
+        .stat-box strong {
+          font-size: 0.92rem;
+        }
+
+        .stat-box span {
+          font-size: 0.58rem;
+        }
+
+        .bottom-nav {
+          left: 14px;
+          right: 14px;
+        }
+
+        .nav-item {
+          min-height: 34px;
+          font-size: 0.5rem;
+          white-space: nowrap;
+        }
+
+        .nav-item .icon {
+          height: 14px;
+          margin-bottom: 0;
+        }
+
+        .sensor-card {
+          min-height: 98px;
+          padding: 10px;
+        }
+
+        .sensor-card strong {
+          margin-top: 10px;
+          font-size: 1.4rem;
+        }
+
+        .sensor-card.wide {
+          min-height: 82px;
+        }
+
+        .report-heading,
+        .about-heading {
+          margin: 2px 0 10px;
+        }
+
+        .report-heading h2,
+        .about-heading h2 {
+          font-size: 1.65rem;
+        }
+
+        .report-card,
+        .about-card {
+          padding: 10px;
+          margin-bottom: 7px;
+        }
+
+        .consumption-chart {
+          height: 96px;
+          margin-top: 8px;
+        }
+
+        .about-card p {
+          font-size: 0.7rem;
+        }
+
+        .member-list {
+          gap: 5px;
+          margin-top: 6px;
+        }
+
+        .member {
+          padding: 7px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="phone-inner">
+        <header class="topbar">
+          <div class="header-icons">
+            <div class="bell">🔔</div>
+            <img class="avatar" src="imagens/logo.jpeg" alt="Logo da equipe C6R" />
+          </div>
+        </header>
+
+        <main class="home-view">
+        <h1>
+          <span>Olá, Equipe C6R!</span>
+          <span class="leaf">🌿</span>
+        </h1>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <div class="mini-icon">💧</div>
+            <div class="mini-info">
+              <p>Horta irrigada</p>
+              <strong>à 3 min</strong>
+            </div>
+          </div>
+
+          <div class="mini-card">
+            <div class="mini-icon">🌱</div>
+            <div class="mini-info">
+              <p>Solo úmido</p>
+              <strong>Ideal</strong>
+            </div>
+          </div>
+
+          <div class="mini-card">
+            <div class="mini-icon">🌡️</div>
+            <div class="mini-info">
+              <p>Temperatura</p>
+              <strong>27°C</strong>
+            </div>
+          </div>
+
+          <div class="mini-card large">
+            <div class="mini-icon">💦</div>
+            <div class="mini-info">
+              <p>Água gasta hoje</p>
+              <strong>2,5 litros</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="garden-wrap">
+          <div class="water-badge">
+            <div class="drop">💧</div>
+            <div>
+              <span>Total hoje</span>
+              <strong>2,5L</strong>
+            </div>
+          </div>
+
+          <div class="ring">
+            <div class="ring-inner">
+              <img class="garden-photo" src="imagens/vista da horta.jpeg" alt="Vista da horta" />
+            </div>
+          </div>
+
+          <div class="ring-label">
+            <span class="mini">Irrigação ativa</span>
+            <strong>3 min</strong>
+          </div>
+
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="leaf">🌿</div>
+            <strong>80</strong>
+            <span>Plantas monitoradas</span>
+          </div>
+          <div class="stat-box">
+            <div class="leaf">🌱</div>
+            <strong>11</strong>
+            <span>Cultivos ativos</span>
+          </div>
+          <div class="stat-box">
+            <div class="leaf">💧</div>
+            <strong>2,5L</strong>
+            <span>Consumo hoje</span>
+          </div>
+          <div class="stat-box">
+            <div class="leaf">⭐</div>
+            <strong>6</strong>
+            <span>Saúde da horta</span>
+          </div>
+        </div>
+        </main>
+
+        <main class="sensor-view" aria-labelledby="sensor-title">
+          <div class="sensor-heading">
+            <div>
+              <h2 id="sensor-title">Sensores</h2>
+              <p>Dados atualizados agora</p>
+            </div>
+            <span class="sensor-status" aria-label="sensores conectados"></span>
+          </div>
+
+          <div class="sensor-list">
+            <article class="sensor-card">
+              <header><span>Umidade do solo</span><span class="sensor-status"></span></header>
+              <strong>68%</strong>
+              <small>Faixa ideal</small>
+              <div class="sensor-bar"><span></span></div>
+            </article>
+            <article class="sensor-card">
+              <header><span>Temperatura</span><span class="sensor-status"></span></header>
+              <strong>27°C</strong>
+              <small>Ambiente estável</small>
+            </article>
+            <article class="sensor-card">
+              <header><span>Luminosidade</span><span class="sensor-status"></span></header>
+              <strong>740</strong>
+              <small>lux</small>
+            </article>
+            <article class="sensor-card">
+              <header><span>Umidade do ar</span><span class="sensor-status"></span></header>
+              <strong>61%</strong>
+              <small>Condição boa</small>
+            </article>
+            <article class="sensor-card wide">
+              <header><span>Última leitura</span><span>há 3 min</span></header>
+              <strong>Todos os sensores funcionando</strong>
+              <small>Próxima atualização automática em 2 min</small>
+            </article>
+          </div>
+        </main>
+
+        <main class="report-view" aria-labelledby="report-title">
+          <div class="report-heading">
+            <h2 id="report-title">Relatórios</h2>
+            <p>Desempenho da horta nos últimos 7 dias</p>
+          </div>
+
+          <div class="profile-overview report-overview">
+            <button class="overview-card" type="button" data-overview-profile="c6r"><strong>Equipe C6R</strong><span>Guardião da horta</span><small>420 XP · Nível 4</small></button>
+            <button class="overview-card" type="button" data-overview-profile="ana"><strong>Ana</strong><span>Sensores</span><small>280 XP · Nível 3</small></button>
+            <button class="overview-card" type="button" data-overview-profile="bruno"><strong>Allyson</strong><span>Irrigação</span><small>610 XP · Nível 5</small></button>
+            <button class="overview-card" type="button" data-overview-profile="lia"><strong>Éric</strong><span>Relatórios</span><small>350 XP · Nível 3</small></button>
+          </div>
+
+          <section class="report-overview-summary">
+            <div><span>Consumo semanal</span><strong>14,8 L</strong></div>
+            <div><span>Economia de água</span><strong>22%</strong></div>
+            <p>O solo ficou na faixa ideal durante 86% da semana.</p>
+          </section>
+
+          <section class="report-overview-panel" aria-label="gráfico geral da semana">
+            <header><strong>Consumo por dia</strong><span>litros</span></header>
+            <div class="overview-chart">
+              <div class="overview-bar"><i style="--bar-height: 38%"></i><span>Seg</span></div>
+              <div class="overview-bar"><i style="--bar-height: 54%"></i><span>Ter</span></div>
+              <div class="overview-bar"><i style="--bar-height: 45%"></i><span>Qua</span></div>
+              <div class="overview-bar"><i style="--bar-height: 72%"></i><span>Qui</span></div>
+              <div class="overview-bar"><i style="--bar-height: 61%"></i><span>Sex</span></div>
+              <div class="overview-bar"><i style="--bar-height: 88%"></i><span>Sáb</span></div>
+              <div class="overview-bar"><i style="--bar-height: 49%"></i><span>Dom</span></div>
+            </div>
+            <div class="report-insights">
+              <div><span>Melhor dia</span><strong>Sáb</strong></div>
+              <div><span>Irrigações</span><strong>18</strong></div>
+              <div><span>Saúde</span><strong>86%</strong></div>
+            </div>
+          </section>
+
+          <div class="profile-detail report-detail" id="report-detail">
+          <div class="report-profile-switcher" aria-label="perfil do relatório">
+            <button class="active" type="button" data-report-profile="c6r">Equipe C6R</button>
+            <button type="button" data-report-profile="ana">Ana</button>
+            <button type="button" data-report-profile="bruno">Allyson</button>
+            <button type="button" data-report-profile="lia">Éric</button>
+          </div>
+
+          <section class="daily-report" aria-label="informações do dia">
+            <header>
+              <strong id="daily-report-owner">Equipe C6R</strong>
+              <span>19 de setembro</span>
+            </header>
+            <textarea id="daily-report-text" placeholder="Escreva o que aconteceu na horta hoje..."></textarea>
+            <div class="daily-report-footer">
+              <small id="daily-report-status">Nenhum registro salvo</small>
+              <button class="save-report" type="button">Salvar registro</button>
+            </div>
+          </section>
+
+          <section class="report-card" aria-label="consumo de água">
+            <header>
+              <span>Consumo de água</span>
+              <strong>14,8 L</strong>
+            </header>
+            <div class="consumption-chart" aria-label="gráfico de consumo semanal">
+              <div class="chart-column"><i style="--bar-height: 42%"></i><span>Seg</span></div>
+              <div class="chart-column"><i style="--bar-height: 58%"></i><span>Ter</span></div>
+              <div class="chart-column"><i style="--bar-height: 48%"></i><span>Qua</span></div>
+              <div class="chart-column"><i style="--bar-height: 76%"></i><span>Qui</span></div>
+              <div class="chart-column"><i style="--bar-height: 64%"></i><span>Sex</span></div>
+              <div class="chart-column"><i style="--bar-height: 86%"></i><span>Sáb</span></div>
+              <div class="chart-column"><i style="--bar-height: 52%"></i><span>Dom</span></div>
+            </div>
+          </section>
+
+          <div class="report-summary">
+            <div class="summary-line"><span>Irrigações concluídas</span><strong>18</strong></div>
+            <div class="summary-line"><span>Economia de água</span><strong>22%</strong></div>
+          </div>
+          <p class="report-note">A horta manteve o solo na faixa ideal durante 86% da semana.</p>
+          </div>
+        </main>
+
+        <main class="about-view" aria-labelledby="about-title">
+          <div class="about-heading">
+            <h2 id="about-title">Quem somos</h2>
+            <p>Conheça o grupo por trás do projeto</p>
+          </div>
+
+          <section class="about-card">
+            <h3>Nosso grupo</h3>
+            <p>Somos uma equipe dedicada a criar soluções simples, úteis e sustentáveis para o cuidado diário da horta.</p>
+            <div class="member-list">
+              <div class="member"><strong>Bárbara Garcia</strong><span>Professora guiadora</span></div>
+              <div class="member"><strong>Glayne</strong><span>Colaboração e ajuda</span></div>
+              <div class="member"><strong>Éric Campos</strong><span>Hardware e sensores</span></div>
+              <div class="member"><strong>Allyson</strong><span>Instalação e conserto</span></div>
+              <div class="member"><strong>Ana Luisa</strong><span>Dados e relatórios</span></div>
+              <div class="member"><strong>Yasmim Santana</strong><span>Design e arte</span></div>
+              <div class="member"><strong>Estela</strong><span>Composteira e resíduos orgânicos</span></div>
+              <div class="member"><strong>Nathaxa</strong><span>Mídia e publicidade</span></div>
+            </div>
+          </section>
+
+          <section class="about-card">
+            <h3>Por que este projeto?</h3>
+            <p>A Horta Inteligente ajuda a acompanhar a umidade do solo, controlar o consumo de água e tomar decisões melhores para manter as plantas saudáveis.</p>
+          </section>
+
+          <section class="about-card">
+            <h3>Nosso objetivo</h3>
+            <p>Usar tecnologia para economizar recursos, facilitar o cuidado com a horta e tornar o cultivo mais consciente.</p>
+          </section>
+        </main>
+
+        <main class="missions-view" aria-labelledby="missions-title">
+          <div class="missions-heading">
+            <div>
+              <h2 id="missions-title">Missões</h2>
+              <p>Cuide da horta todos os dias</p>
+            </div>
+            <strong id="mission-day">Dia 12</strong>
+          </div>
+
+          <div class="profile-overview mission-overview">
+            <button class="overview-card" type="button" data-overview-profile="c6r"><strong>Equipe C6R</strong><span>Guardião da horta</span><small>Dia 12 · 64% concluído</small></button>
+            <button class="overview-card" type="button" data-overview-profile="ana"><strong>Ana</strong><span>Sensores</span><small>Dia 8 · 48% concluído</small></button>
+            <button class="overview-card" type="button" data-overview-profile="bruno"><strong>Allyson</strong><span>Irrigação</span><small>Dia 21 · 82% concluído</small></button>
+            <button class="overview-card" type="button" data-overview-profile="lia"><strong>Éric</strong><span>Relatórios</span><small>Dia 10 · 56% concluído</small></button>
+          </div>
+
+          <div class="profile-detail mission-detail" id="mission-detail">
+          <section class="mission-profile">
+            <img class="mission-avatar" src="imagens/logo.jpeg" alt="Perfil da equipe C6R" />
+            <div>
+              <strong id="mission-member-name">Equipe C6R</strong>
+              <span id="mission-member-role">Guardião da horta</span>
+            </div>
+            <div class="mission-xp"><span id="mission-xp">420 XP</span><br /><span id="mission-level">Nível 4</span></div>
+          </section>
+
+          <div class="mission-progress" aria-label="progresso do perfil"><span id="mission-progress-bar"></span></div>
+
+          <div class="mission-list">
+            <article class="mission-card done">
+              <div class="mission-check">✓</div>
+              <div><strong>Conferir a umidade do solo</strong><small>O solo está na faixa ideal</small></div>
+              <span class="mission-reward">+30 XP</span>
+            </article>
+            <article class="mission-card done">
+              <div class="mission-check">✓</div>
+              <div><strong>Registrar a temperatura</strong><small>Última leitura: 27°C</small></div>
+              <span class="mission-reward">+20 XP</span>
+            </article>
+            <article class="mission-card">
+              <div class="mission-check"></div>
+              <div><strong>Observar as folhas</strong><small>Procure sinais de sede ou pragas</small></div>
+              <span class="mission-reward">+40 XP</span>
+            </article>
+            <article class="mission-card">
+              <div class="mission-check"></div>
+              <div><strong>Confirmar a irrigação</strong><small>Evite desperdício de água</small></div>
+              <span class="mission-reward">+30 XP</span>
+            </article>
+          </div>
+
+          <div class="profile-switcher" aria-label="perfis da equipe">
+            <button class="active" type="button" data-member="Equipe C6R" data-role="Guardião da horta" data-profile="c6r" data-xp="420" data-level="4" data-day="12" data-progress="64%">Equipe C6R</button>
+            <button type="button" data-member="Ana" data-role="Sensores" data-profile="ana" data-xp="280" data-level="3" data-day="8" data-progress="48%">Ana</button>
+            <button type="button" data-member="Allyson" data-role="Irrigação" data-profile="bruno" data-xp="610" data-level="5" data-day="21" data-progress="82%">Allyson</button>
+            <button type="button" data-member="Éric" data-role="Relatórios" data-profile="lia" data-xp="350" data-level="3" data-day="10" data-progress="56%">Éric</button>
+          </div>
+          </div>
+
+          <section class="mission-calendar" aria-label="calendário de missões">
+            <div class="calendar-header">
+              <button id="previous-month" type="button" aria-label="mês anterior">‹</button>
+              <strong id="calendar-month">Setembro 2026</strong>
+              <button id="next-month" type="button" aria-label="próximo mês">›</button>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true">
+              <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+            </div>
+            <div class="calendar-days" id="calendar-days"></div>
+            <p class="calendar-note" id="calendar-note">19 de setembro: acompanhamento de hoje</p>
+          </section>
+        </main>
+
+        <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+          <form class="auth-card" id="profile-login-form">
+            <h3 id="auth-title">Entrar no perfil</h3>
+            <p>Digite a senha para acessar os dados deste integrante.</p>
+            <label for="profile-password">Senha</label>
+            <input id="profile-password" type="password" autocomplete="current-password" required />
+            <div class="auth-error" role="alert"></div>
+            <div class="auth-actions">
+              <button class="auth-cancel" type="button">Cancelar</button>
+              <button class="auth-submit" type="submit">Entrar</button>
+            </div>
+          </form>
+        </div>
+
+        <nav class="bottom-nav" aria-label="navegação de app">
+          <button class="nav-item active" type="button" data-view="home"><div class="icon">🏠</div><span>Início</span></button>
+          <button class="nav-item" type="button" data-view="sensors"><div class="icon">▣</div><span>Sensores</span></button>
+          <button class="nav-item" type="button" data-view="reports"><div class="icon">☑️</div><span>Relatórios</span></button>
+          <button class="nav-item" type="button" data-view="missions"><div class="icon">★</div><span>Missões</span></button>
+          <button class="nav-item" type="button" data-view="about"><div class="icon">👤</div><span>Quem somos</span></button>
+        </nav>
+
+      </div>
+    </div>
+    <script>
+      const homeView = document.querySelector(".home-view");
+      const sensorView = document.querySelector(".sensor-view");
+      const reportView = document.querySelector(".report-view");
+      const aboutView = document.querySelector(".about-view");
+      const missionsView = document.querySelector(".missions-view");
+      const missionDetail = document.querySelector("#mission-detail");
+      const reportDetail = document.querySelector("#report-detail");
+      const navItems = document.querySelectorAll(".nav-item");
+      const authModal = document.querySelector(".auth-modal");
+      const loginForm = document.querySelector("#profile-login-form");
+      const passwordInput = document.querySelector("#profile-password");
+      const authError = document.querySelector(".auth-error");
+      const calendarMonth = document.querySelector("#calendar-month");
+      const calendarDays = document.querySelector("#calendar-days");
+      const calendarNote = document.querySelector("#calendar-note");
+      const reportProfileButtons = document.querySelectorAll("[data-report-profile]");
+      const dailyReportOwner = document.querySelector("#daily-report-owner");
+      const dailyReportText = document.querySelector("#daily-report-text");
+      const dailyReportStatus = document.querySelector("#daily-report-status");
+      const profilePasswords = {
+        c6r: "c6r2026",
+        ana: "ana2026",
+        bruno: "allyson2026",
+        lia: "eric2026"
+      };
+      let pendingProfile = null;
+      let pendingProfileType = "mission";
+      let activeReportProfile = "c6r";
+      const reportProfileNames = {
+        c6r: "Equipe C6R",
+        ana: "Ana",
+        bruno: "Allyson",
+        lia: "Éric"
+      };
+
+      const loadDailyReport = (profileId) => {
+        activeReportProfile = profileId;
+        dailyReportOwner.textContent = reportProfileNames[profileId];
+        dailyReportText.value = localStorage.getItem(`horta-report-${profileId}`) || "";
+        dailyReportStatus.textContent = dailyReportText.value ? "Registro salvo neste dispositivo" : "Nenhum registro salvo";
+        reportProfileButtons.forEach((button) => button.classList.toggle("active", button.dataset.reportProfile === profileId));
+      };
+      let calendarDate = new Date(2026, 8, 19);
+      let selectedDate = new Date(calendarDate);
+
+      const renderCalendar = () => {
+        const monthName = calendarDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+        calendarMonth.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        calendarDays.innerHTML = "";
+        const firstDay = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1).getDay();
+        const daysInMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 0).getDate();
+
+        for (let index = 0; index < firstDay; index += 1) {
+          const spacer = document.createElement("button");
+          spacer.disabled = true;
+          spacer.setAttribute("aria-hidden", "true");
+          calendarDays.appendChild(spacer);
+        }
+
+        for (let day = 1; day <= daysInMonth; day += 1) {
+          const visibleDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day);
+          const button = document.createElement("button");
+          const isSelected = selectedDate.toDateString() === visibleDate.toDateString();
+          const isToday = visibleDate.getFullYear() === 2026 && visibleDate.getMonth() === 8 && visibleDate.getDate() === 19;
+          button.textContent = day;
+          button.type = "button";
+          button.classList.toggle("today", isToday);
+          button.classList.toggle("selected", isSelected);
+          button.addEventListener("click", () => {
+            selectedDate = new Date(visibleDate);
+            calendarDate = new Date(visibleDate.getFullYear(), visibleDate.getMonth(), 1);
+            const selectedMonth = selectedDate.toLocaleDateString("pt-BR", { month: "long" });
+            calendarNote.textContent = `${selectedDate.getDate()} de ${selectedMonth}: acompanhamento selecionado`;
+            renderCalendar();
+          });
+          calendarDays.appendChild(button);
+        }
+      };
+
+      document.querySelector("#previous-month").addEventListener("click", () => {
+        calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1);
+        selectedDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 19);
+        renderCalendar();
+      });
+
+      document.querySelector("#next-month").addEventListener("click", () => {
+        calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1);
+        selectedDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 19);
+        renderCalendar();
+      });
+
+      renderCalendar();
+
+      const activateMissionProfile = (profile) => {
+        missionDetail.classList.add("active");
+        document.querySelector(".mission-overview").style.display = "none";
+        document.querySelectorAll(".profile-switcher button").forEach((item) => item.classList.toggle("active", item === profile));
+        document.querySelector("#mission-member-name").textContent = profile.dataset.member;
+        document.querySelector("#mission-member-role").textContent = profile.dataset.role;
+        document.querySelector("#mission-xp").textContent = `${profile.dataset.xp} XP`;
+        document.querySelector("#mission-level").textContent = `Nível ${profile.dataset.level}`;
+        document.querySelector("#mission-day").textContent = `Dia ${profile.dataset.day}`;
+        document.querySelector("#mission-progress-bar").style.width = profile.dataset.progress;
+      };
+
+      navItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          const isSensors = item.dataset.view === "sensors";
+          const isReports = item.dataset.view === "reports";
+          const isAbout = item.dataset.view === "about";
+          const isMissions = item.dataset.view === "missions";
+          homeView.style.display = isSensors || isReports || isAbout || isMissions ? "none" : "block";
+          sensorView.classList.toggle("active", isSensors);
+          reportView.classList.toggle("active", isReports);
+          aboutView.classList.toggle("active", isAbout);
+          missionsView.classList.toggle("active", isMissions);
+          if (isMissions) {
+            missionDetail.classList.remove("active");
+            document.querySelector(".mission-overview").style.display = "grid";
+            document.querySelector("#mission-day").textContent = "Visão geral";
+            calendarDate = new Date(2026, 8, 19);
+            selectedDate = new Date(calendarDate);
+            calendarNote.textContent = "19 de setembro: acompanhamento de hoje";
+            renderCalendar();
+          }
+          if (isReports) {
+            reportDetail.classList.remove("active");
+            document.querySelector(".report-overview").style.display = "grid";
+          }
+          navItems.forEach((navItem) => navItem.classList.toggle("active", navItem === item));
+        });
+      });
+
+      document.querySelectorAll(".profile-switcher button").forEach((button) => {
+        button.addEventListener("click", () => {
+          pendingProfile = button;
+          pendingProfileType = "mission";
+          authError.textContent = "";
+          passwordInput.value = "";
+          authModal.classList.add("open");
+          passwordInput.focus();
+        });
+      });
+
+      document.querySelectorAll("[data-overview-profile]").forEach((card) => {
+        card.addEventListener("click", () => {
+          const profileId = card.dataset.overviewProfile;
+          const currentView = card.closest(".missions-view") ? ".profile-switcher" : ".report-profile-switcher";
+          const target = document.querySelector(`${currentView} [data-profile="${profileId}"], ${currentView} [data-report-profile="${profileId}"]`);
+          target.click();
+        });
+      });
+
+      reportProfileButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          pendingProfile = button;
+          pendingProfileType = "report";
+          authError.textContent = "";
+          passwordInput.value = "";
+          authModal.classList.add("open");
+          passwordInput.focus();
+        });
+      });
+
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const profileId = pendingProfileType === "report" ? pendingProfile?.dataset.reportProfile : pendingProfile?.dataset.profile;
+        if (!pendingProfile || passwordInput.value !== profilePasswords[profileId]) {
+          authError.textContent = "Senha incorreta. Tente novamente.";
+          passwordInput.select();
+          return;
+        }
+
+        if (pendingProfileType === "report") {
+          reportDetail.classList.add("active");
+          document.querySelector(".report-overview").style.display = "none";
+          loadDailyReport(pendingProfile.dataset.reportProfile);
+        } else {
+          activateMissionProfile(pendingProfile);
+        }
+        authModal.classList.remove("open");
+        pendingProfile = null;
+      });
+
+      document.querySelector(".auth-cancel").addEventListener("click", () => {
+        authModal.classList.remove("open");
+        pendingProfile = null;
+      });
+
+      document.querySelector(".save-report").addEventListener("click", () => {
+        localStorage.setItem(`horta-report-${activeReportProfile}`, dailyReportText.value.trim());
+        dailyReportStatus.textContent = "Registro salvo neste dispositivo";
+      });
+
+      loadDailyReport("c6r");
+    </script>
+  </body>
+</html>
