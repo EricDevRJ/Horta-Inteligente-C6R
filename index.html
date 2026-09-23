@@ -1806,6 +1806,12 @@
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
     /* =================================
        FIREBASE CONFIG
        ================================= */
@@ -1845,6 +1851,8 @@
 
     const db =
       getDatabase(app);
+
+    const auth = getAuth(app)
 
 
     /* =================================
