@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Horta Inteligente</title>
+  <meta name="theme-color" content="#14221d">
+  <link rel="manifest" href="manifest.webmanifest">
+
+    <link rel="stylesheet" href="horta.css">
+
+</head>
+
+
+<body>
+
+  <div class="startup-screen" id="startup-screen" role="status" aria-label="Carregando Horta Inteligente">
+    <div class="startup-glow startup-glow-top" aria-hidden="true"></div>
+    <div class="startup-glow startup-glow-bottom" aria-hidden="true"></div>
+    <div class="startup-content">
+      <div class="startup-logo-wrap">
+        <img class="startup-logo" src="resources/icon.svg" alt="">
+      </div>
+      <p class="startup-kicker">C6R apresenta</p>
+      <h1 class="startup-title">Horta Inteligente</h1>
+      <p class="startup-subtitle">Planta e Gota</p>
+      <div class="startup-loader" aria-hidden="true">
+        <span></span>
+      </div>
+      <p class="startup-loading">Preparando sua horta...</p>
+    </div>
+  </div>
+
+  <div class="app-shell">
+
+
+    <!-- =================================
+         TOPO
+         ================================= -->
+
+    <header class="topbar">
+
+      <div class="header-icons">
+
+        <button
+          class="bell"
+          id="open-control"
+          type="button"
+          aria-label="Controle da irrigação"
+        >
+          🛠
+        </button>
+
+        <img
+          class="avatar"
+          src="imagens/logo.jpeg"
+          alt="Logo da equipe C6R"
+        >
+
+        <button
+          id="installAppButton"
+          class="install-app-button"
+          type="button"
+          aria-label="Instalar o aplicativo Horta Inteligente"
+        >
+          📱 Instalar Horta Inteligente
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =================================
+         INÍCIO
+         ================================= -->
+
+    <main
+      id="view-home"
+      class="view active"
+    >
+
+      <h1 class="greeting">
+        Olá! Que bom ter você por aqui.
+      </h1>
+
+      <p class="subtitle">
+        Conheça a Planta e Gota, uma horta inteligente do grupo C6R.
+      </p>
+
+      <section class="intro-card" aria-labelledby="project-intro-title">
+        <span class="intro-eyebrow">SHELL NXPLORERS</span>
+        <h2 id="project-intro-title">Tecnologia a serviço do cultivo</h2>
+        <p>
+          A Planta e Gota une cultivo de alimentos, tecnologia e uso consciente
+          da água em uma horta inteligente.
+        </p>
+        <p>
+          Sensores conectados a um ESP32 ajudam a acompanhar o solo e o ambiente,
+          apoiando decisões de irrigação conforme a necessidade das plantas.
+        </p>
+      </section>
+
+      <div class="garden-card">
+
+        <img
+          src="imagens/vista da horta.jpeg"
+          alt="Vista da horta"
+        >
+
+        <div class="garden-card-content">
+
+          <h3>
+            Uma horta conectada
+          </h3>
+
+          <p>
+            O sistema reúne sensores, irrigação e acompanhamento digital para
+            aproximar tecnologia e cuidado com as plantas.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <section class="home-data-section" aria-labelledby="home-data-title">
+        <h2 class="section-title" id="home-data-title">
+          Acompanhamento da horta
+        </h2>
+        <p class="section-subtitle">
+          Indicadores do sistema de cultivo e irrigação.
+        </p>
+
+        <div class="mini-grid">
+
+          <div class="mini-card">
+            <span>Estado da irrigação</span>
+            <strong id="home-pump">Desligada</strong>
+          </div>
+
+          <div class="mini-card">
+            <span>Umidade média do solo</span>
+            <strong id="home-soil">--%</strong>
+          </div>
+
+          <div class="mini-card">
+            <span>Temperatura</span>
+            <strong id="home-temperature">--°C</strong>
+          </div>
+
+          <div class="mini-card">
+            <span>Consumo de água hoje</span>
+            <strong id="home-water">-- L</strong>
+          </div>
+
+        </div>
+
+        <div class="stats-card">
+
+          <div class="stats-row">
+
+            <div class="stat">
+              <strong>80</strong>
+              <span>Plantas monitoradas</span>
+            </div>
+
+            <div class="stat">
+              <strong>11</strong>
+              <span>Cultivos ativos</span>
+            </div>
+
+            <div class="stat">
+              <strong id="home-health">--%</strong>
+              <span>Saúde da horta</span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+
+    <!-- =================================
+         SENSORES
+         ================================= -->
+
+    <main
+      id="view-sensors"
+      class="view"
+    >
+
+      <h2 class="section-title">
+        Sensores
+      </h2>
+
+      <p class="section-subtitle">
+        Dados recebidos em tempo real pelo ESP32.
+      </p>
+
+
+      <div class="sensor-grid">
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🌱
+          </div>
+
+          <span>
+            Solo 1
+          </span>
+
+          <strong id="solo1">
+            --%
+          </strong>
+
+          <small>
+            Umidade
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🌱
+          </div>
+
+          <span>
+            Solo 2
+          </span>
+
+          <strong id="solo2">
+            --%
+          </strong>
+
+          <small>
+            Umidade
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🌱
+          </div>
+
+          <span>
+            Solo 3
+          </span>
+
+          <strong id="solo3">
+            --%
+          </strong>
+
+          <small>
+            Umidade
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🌱
+          </div>
+
+          <span>
+            Solo 4
+          </span>
+
+          <strong id="solo4">
+            --%
+          </strong>
+
+          <small>
+            Umidade
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🌡️
+          </div>
+
+          <span>
+            Temperatura
+          </span>
+
+          <strong id="temperature">
+            --°C
+          </strong>
+
+          <small>
+            Ambiente
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            💧
+          </div>
+
+          <span>
+            Umidade do ar
+          </span>
+
+          <strong id="air-humidity">
+            --%
+          </strong>
+
+          <small>
+            DHT22
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            💦
+          </div>
+
+          <span>
+            Água gasta hoje
+          </span>
+
+          <strong id="water-today">
+            -- L
+          </strong>
+
+          <small>
+            YF-S201
+          </small>
+
+        </div>
+
+
+        <div class="sensor-card">
+
+          <div class="sensor-icon">
+            🚿
+          </div>
+
+          <span>
+            Bomba
+          </span>
+
+          <strong id="sensor-pump">
+            --
+          </strong>
+
+          <small>
+            Estado atual
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="firebase-status">
+
+        <span class="firebase-dot"></span>
+
+        <span>
+          Firebase conectado
+        </span>
+
+      </div>
+
+    </main>
+
+
+    <!-- =================================
+         RELATÓRIOS
+         ================================= -->
+
+    <main
+      id="view-reports"
+      class="view"
+    >
+
+      <h2 class="section-title">
+        Relatórios
+      </h2>
+
+      <p class="section-subtitle">
+        Acompanhe o desempenho da horta.
+      </p>
+
+
+      <div class="report-card">
+
+        <h3>
+          Consumo de água
+        </h3>
+
+        <div
+          class="report-value"
+          id="report-water"
+        >
+          -- L
+        </div>
+
+        <div class="report-label">
+          Consumo registrado hoje
+        </div>
+
+      </div>
+
+
+      <div class="report-card">
+
+        <h3>
+          Umidade média do solo
+        </h3>
+
+        <div
+          class="report-value"
+          id="report-saving"
+        >
+          --%
+        </div>
+
+        <div class="report-label">
+          Média dos quatro sensores
+        </div>
+
+        <div class="bar-container">
+
+          <div class="bar-label">
+
+            <span>
+              Umidade
+            </span>
+
+            <span id="saving-label">
+              --%
+            </span>
+
+          </div>
+
+          <div class="bar">
+
+            <div
+              class="bar-fill progress-empty"
+              id="saving-bar"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="report-card">
+
+        <h3>
+          Saúde da horta
+        </h3>
+
+        <div
+          class="report-value"
+          id="report-health"
+        >
+          --%
+        </div>
+
+        <div class="report-label">
+          Baseada na umidade média do solo
+        </div>
+
+      </div>
+
+
+      <div class="report-card">
+
+        <h3>
+          Relatório semanal
+        </h3>
+
+        <p
+          id="weekly-report"
+          class="weekly-report"
+        >
+          Aguardando dados...
+        </p>
+
+      </div>
+
+    </main>
+
+
+    <!-- =================================
+         MISSÕES
+         ================================= -->
+
+    <main
+      id="view-missions"
+      class="view"
+    >
+
+      <h2 class="section-title">
+        Missões
+      </h2>
+
+      <p class="section-subtitle">
+        Acompanhe a evolução da equipe.
+      </p>
+
+
+      <div class="profile-card">
+
+        <div class="profile-header">
+
+          <div class="profile-avatar">
+            👥
+          </div>
+
+          <div>
+
+            <h3>
+              Equipe C6R
+            </h3>
+
+            <p>
+              Projeto Horta Inteligente
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="xp">
+
+          <div class="xp-top">
+
+            <span>
+              XP da equipe
+            </span>
+
+            <span id="team-xp">
+              0 XP
+            </span>
+
+          </div>
+
+          <div class="bar">
+
+            <div
+              class="bar-fill progress-empty"
+              id="team-xp-bar"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="profile-card">
+
+        <h3>
+          Missões
+        </h3>
+
+
+        <div class="mission">
+
+          <strong>
+            🌱 Monitorar a horta
+          </strong>
+
+          <p>
+            Verifique os sensores da horta diariamente.
+          </p>
+
+        </div>
+
+
+        <div class="mission">
+
+          <strong>
+            💧 Economizar água
+          </strong>
+
+          <p>
+            Utilize a irrigação inteligente para evitar desperdícios.
+          </p>
+
+        </div>
+
+
+        <div class="mission">
+
+          <strong>
+            ⚡ Monitorar energia
+          </strong>
+
+          <p>
+            Acompanhe o funcionamento eficiente do sistema.
+          </p>
+
+        </div>
+
+      </div>
+
+    </main>
+
+
+    <!-- =================================
+         QUEM SOMOS
+         ================================= -->
+
+    <main
+      id="view-about"
+      class="view"
+    >
+
+      <h2 class="section-title">
+        Nossa equipe
+      </h2>
+
+      <p class="section-subtitle">
+        Conheça as pessoas por trás da Horta Inteligente.
+      </p>
+
+
+      <div class="about-card">
+
+        <h3>
+          Horta Inteligente Sustentável
+        </h3>
+
+        <p>
+          Nosso projeto busca unir tecnologia e sustentabilidade
+          através de um sistema de irrigação inteligente.
+          O ESP32 recebe informações dos sensores e permite
+          acompanhar as condições da horta em tempo real.
+        </p>
+
+      </div>
+
+
+      <div class="about-card">
+
+        <div class="team-card-heading">
+          <span class="team-eyebrow">PERFIS DA EQUIPE</span>
+          <h3>Quem faz acontecer</h3>
+          <p>Talento, cuidado e colaboração em cada etapa do projeto.</p>
+        </div>
+
+        <div class="member-list">
+
+        <div class="member">
+
+          <div class="member-icon">
+            👩‍🏫
+          </div>
+
+          <div>
+
+            <strong>
+              Bárbara Sherman
+            </strong>
+
+            <span>
+              Professora Orientadora
+            </span>
+
+          </div>
+          <a class="member-link" href="https://www.instagram.com/barbara.sherman.581?stkn=MzBiMWxqYnAxZ3l3" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Bárbara Sherman">Instagram ↗</a>
+
+        </div>
+
+
+        <div class="member">
+
+          <div class="member-icon">
+            💻
+          </div>
+
+          <div>
+
+            <strong>
+              Éric Campos
+            </strong>
+
+            <span>
+              Tecnologia e Desenvolvimento
+            </span>
+
+          </div>
+          <a class="member-link" href="https://www.instagram.com/erizx.xyz?stkn=MWxxZ21zdTh3anhjNg==" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Éric Campos">Instagram ↗</a>
+
+        </div>
+
+
+        <div class="member">
+
+          <div class="member-icon">
+            🔧
+          </div>
+
+          <div>
+
+            <strong>
+              Allyson
+            </strong>
+
+            <span>
+              Instalação e reparos
+            </span>
+
+          </div>
+            <a class="member-link" href="https://www.instagram.com/no_iverson?stkn=YXkycXhqM3ByeHZ4" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Éric Campos">Instagram ↗</a>
+
+        </div>
+
+
+        <div class="member">
+
+          <div class="member-icon">
+            🎨
+          </div>
+
+          <div>
+
+            <strong>
+              Ana Luisa
+            </strong>
+
+            <span>
+              Design e desenhos
+            </span>
+
+          </div>
+          <a class="member-link" href="https://www.instagram.com/ana_lu.ls?stkn=eGZmZXdiZnVtZjI1" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Ana Luisa">Instagram ↗</a>
+
+        </div>
+
+        <div class="member">
+          <div class="member-icon">✨</div>
+          <div>
+            <strong>Yasmim Souza</strong>
+            <span>Design e criações</span>
+          </div>
+          <a class="member-link" href="https://www.instagram.com/_yasmimkk_?stkn=MWliMTJ6aWsyOWN4Yg==" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Yasmim Souza">Instagram ↗</a>
+        </div>
+
+        <div class="member">
+          <div class="member-icon">🌿</div>
+          <div>
+            <strong>Estela</strong>
+            <span>Cuidados e relatórios</span>
+          </div>
+          <a class="member-link" href="https://www.instagram.com/wporto_e?stkn=aXV1ZzR1c202b3Rh" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Estela">Instagram ↗</a>
+        </div>
+
+        <div class="member">
+          <div class="member-icon">🤝</div>
+          <div>
+            <strong>Nathaxa</strong>
+            <span>Suporte e colaboração</span>
+          </div>
+          <a class="member-link" href="https://www.instagram.com/vick_barros4?stkn=MTFoaGNjbXQ4cHBsaQ==" target="_blank" rel="noopener noreferrer" aria-label="Instagram de Nathaxa">Instagram ↗</a>
+        </div>
+
+        </div>
+      </div>
+
+      <div class="creator-footer">
+        <span>Criador do app:</span>
+        <a
+          href="https://www.instagram.com/erizx.xyz/?hl=ml"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Éric Campos
+        </a>
+      </div>
+
+    </main>
+
+
+    <!-- =================================
+         MENU INFERIOR
+         ================================= -->
+
+    <nav class="bottom-nav">
+
+      <button
+        class="nav-btn active"
+        data-view="home"
+      >
+
+        <span>
+          🏠
+        </span>
+
+        Início
+
+      </button>
+
+
+      <button
+        class="nav-btn"
+        data-view="sensors"
+      >
+
+        <span>
+          📊
+        </span>
+
+        Sensores
+
+      </button>
+
+
+      <button
+        class="nav-btn"
+        data-view="reports"
+      >
+
+        <span>
+          📈
+        </span>
+
+        Relatórios
+
+      </button>
+
+
+      <button
+        class="nav-btn"
+        data-view="missions"
+      >
+
+        <span>
+          🎯
+        </span>
+
+        Missões
+
+      </button>
+
+
+      <button
+        class="nav-btn"
+        data-view="about"
+      >
+
+        <span>
+          👥
+        </span>
+
+        Perfis
+
+      </button>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =================================
+       MODAL DO CONTROLE DA BOMBA
+       ================================= -->
+
+  <div
+    class="control-modal"
+    id="control-modal"
+  >
+
+    <div class="control-card">
+
+
+      <!-- LOGIN -->
+
+      <div id="control-login">
+
+        <div class="control-icon">
+          🔐
+        </div>
+
+        <h2>
+          Controle da irrigação
+        </h2>
+
+        <p>
+          Digite a senha para acessar o controle da bomba.
+        </p>
+
+
+        <form id="control-login-form">
+
+          <input
+            type="password"
+            id="control-password"
+            placeholder="Digite a senha"
+            autocomplete="off"
+            required
+          >
+
+
+          <button
+            type="submit"
+            class="control-main-btn"
+          >
+            Entrar
+          </button>
+
+        </form>
+
+
+        <p
+          id="control-login-error"
+          class="control-error"
+        >
+          Senha incorreta.
+        </p>
+
+
+        <button
+          type="button"
+          class="control-close"
+          id="close-control-login"
+        >
+          Cancelar
+        </button>
+
+      </div>
+
+
+      <!-- PAINEL -->
+
+      <div
+        id="control-panel"
+        class="is-hidden"
+      >
+
+        <div class="control-header">
+
+          <div>
+
+            <span class="control-small-title">
+              IRRIGAÇÃO
+            </span>
+
+            <h2>
+              Controle da bomba
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="control-x"
+            id="close-control"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="control-status-box">
+
+          <span class="control-status-label">
+            Status da bomba
+          </span>
+
+          <strong id="control-pump-status">
+            Desligada
+          </strong>
+
+        </div>
+
+
+        <div class="control-section">
+
+          <span class="control-section-title">
+            Modo de funcionamento
+          </span>
+
+
+          <div class="mode-buttons">
+
+            <button
+              type="button"
+              class="mode-btn active"
+              id="mode-auto"
+            >
+              AUTOMÁTICO
+            </button>
+
+
+            <button
+              type="button"
+              class="mode-btn"
+              id="mode-manual"
+            >
+              MANUAL
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="control-info"
+          id="automatic-info"
+        >
+
+          <strong>
+            Modo automático
+          </strong>
+
+          <p>
+            O ESP32 controla a bomba usando os sensores
+            da horta.
+          </p>
+
+        </div>
+
+
+        <div
+          class="control-info"
+          id="manual-info"
+          class="control-info is-hidden"
+        >
+
+          <strong>
+            Modo manual
+          </strong>
+
+          <p>
+            Você pode ligar ou desligar a bomba
+            diretamente pelo site.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="pump-control-btn"
+          id="control-pump-btn"
+          disabled
+        >
+          LIGAR BOMBA
+        </button>
+
+
+        <div class="firebase-control-status">
+
+          <span class="firebase-dot"></span>
+
+          <span>
+            Firebase conectado
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================
+       FIREBASE + JAVASCRIPT
+       ================================= -->
+
+    <script type="module" src="horta.js"></script>
+
+</body>
+
+</html>
