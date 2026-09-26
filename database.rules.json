@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "horta": {
+      "sensores": {
+        ".read": true,
+        ".write": false
+      },
+      "relatorios": {
+        ".read": true,
+        ".write": false
+      },
+      "consumo": {
+        ".read": true,
+        ".write": false
+      },
+      "controle": {
+        ".read": "auth != null && auth.token.email_verified == true",
+        ".write": "auth != null && auth.token.email_verified == true"
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "Horta Inteligente",
+  "short_name": "Horta",
+  "description": "Dashboard da Horta Inteligente da equipe C6R.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14221d",
+  "theme_color": "#2e7d32",
+  "icons": [
+    {
+      "src": "resources/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "resources/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
