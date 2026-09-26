@@ -42,15 +42,54 @@ Mais do que uma horta automatizada, a **Planta e Gota** representa a ideia de qu
 
 ## 📊 Dashboard
 
-O dashboard permite acompanhar os dados da horta em tempo real e visualizar:
+O dashboard complementa a horta física com uma interface para acompanhar os dados recebidos e visualizar o funcionamento do sistema.
 
-- Leituras dos sensores de umidade do solo;
-- Temperatura e umidade do ar;
-- Estado da bomba e modo de irrigação;
-- Consumo de água;
-- Indicadores e relatórios da horta.
+### Funcionalidades demonstradas
 
-O site foi desenvolvido com **HTML, CSS e JavaScript** e utiliza o **Firebase Realtime Database** para receber e apresentar os dados enviados pelo sistema.
+- 🏠 **Início:** visão geral com estado da irrigação, umidade média do solo, temperatura, consumo diário de água e indicador de saúde da horta.
+- 📊 **Sensores:** leituras individuais dos quatro sensores de umidade do solo, temperatura e umidade do ar, além do consumo de água e do estado da bomba.
+- 📈 **Relatórios:** consumo de água do dia, média de umidade do solo, indicador visual e relatório semanal.
+- 🎯 **Missões:** área de acompanhamento das missões e da evolução da equipe.
+- 👥 **Quem somos:** apresentação da equipe C6R e do projeto.
+- 🚿 **Controle da irrigação:** painel com modos automático e manual. No modo automático, o ESP32 controla a irrigação; no modo manual, a interface permite enviar o comando da bomba.
+- 📱 **Acesso pelo navegador:** interface responsiva e manifesto PWA para permitir a instalação oferecida por navegadores compatíveis.
+
+Os valores do dashboard são atualizados a partir dos dados disponíveis no Firebase. Quando o sistema físico está conectado e enviando leituras, as telas refletem essas atualizações.
+
+### Fluxo dos dados
+
+1. Os sensores coletam informações do solo e do ambiente.
+2. O ESP32 lê os sensores e controla a irrigação conforme o modo de operação.
+3. Os dados são enviados ao Firebase Realtime Database.
+4. O dashboard recebe as atualizações e apresenta os indicadores e relatórios.
+
+## 🧰 Tecnologias
+
+- **ESP32** para leitura dos sensores e controle do sistema.
+- **HTML, CSS e JavaScript** para a interface do dashboard.
+- **Firebase Realtime Database** para receber e atualizar os dados da horta.
+- **GitHub Pages** para disponibilizar o dashboard pela web.
+- **Web App Manifest** para descrever a experiência instalável oferecida por navegadores compatíveis.
+
+## 📁 Organização do dashboard
+
+```text
+.
+├── index.html
+├── horta.css
+├── horta.js
+├── manifest.webmanifest
+├── imagens/
+└── resources/
+```
+
+- `index.html` contém as telas e os componentes do dashboard.
+- `horta.css` define a aparência e a adaptação para dispositivos móveis.
+- `horta.js` cuida da navegação, integração com Firebase, apresentação dos dados e controle da irrigação.
+- `manifest.webmanifest` contém o nome, os ícones e as preferências de exibição da PWA.
+- `imagens/` e `resources/` guardam imagens do projeto e ícones usados pelo site.
+
+> A instalação pelo navegador depende do suporte e dos critérios de instalação da plataforma. Em dispositivos ou navegadores que não oferecem o prompt personalizado, pode ser necessário usar a opção de instalação do próprio navegador.
 
 ### Acesse o projeto
 
